@@ -26,8 +26,8 @@ end
 
 session = Capybara::Session.new(:cuprite)
 
-origin = URI.encode_www_form_component("urn:trainline:generic:loc:7527")
-destination = URI.encode_www_form_component("urn:trainline:generic:loc:4922")
+origin = URI.encode_www_form_component("urn:trainline:generic:loc:7527") # London (Any)
+destination = URI.encode_www_form_component("urn:trainline:generic:loc:4922") # Paris (Any)
 date = URI.encode_www_form_component("2025-11-20")
 url ="https://www.thetrainline.com/book/results?origin=#{origin}&destination=#{destination}&outwardDate=#{date}"
 
@@ -59,6 +59,8 @@ begin
   # 5. ONLY NOW call the parser
   puts "Only now call the parser..."
 
+#  scraper = Scraper::TheTrainline.new('London', 'Paris', DateTime.now)
+  fixture = Scraper::TheTrainline::Fixture.new(from = 'London', to = 'Paris').save_fixture(session.html) 
 # Now parse
   results = Scraper::TheTrainline::Parser.new(session).parse
   pp results

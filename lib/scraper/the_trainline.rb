@@ -1,10 +1,18 @@
 module Scraper
   class TheTrainline
+    attr_reader :from, :to, :departure_at
+
     BASE_URL = "https://www.thetrainline.com"
     def self.find(from, to, departure_at)
       puts "From: #{from}"
       puts "To: #{to}"
       puts "Departure At: #{departure_at}"
+    end
+
+    def initialize(from, to, departure_at)
+      @from = from
+      @to = to
+      @departure_at = departure_at
     end
 
     # frozen_string_literal: true
@@ -156,6 +164,19 @@ module Scraper
         return "EUR" if text.include?("€")
         return "GBP" if text.include?("£")
         "EUR"
+      end
+    end
+
+    class Fixture
+      attr_reader :from, :to
+      def initialize(from, to)
+        @from = from.downcase
+        @to = to.downcase
+      end
+      
+      # Save a fixture for later use
+      def save_fixture(html)
+        File.write("fixtures/sample_#{from}_#{to}.html", html)
       end
     end
   end
