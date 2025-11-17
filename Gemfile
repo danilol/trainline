@@ -4,6 +4,7 @@ source "https://rubygems.org"
 
 gem 'capybara'
 gem 'cuprite'
+gem 'nokogiri'
 
 # development
 gem 'irb'
