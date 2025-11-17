@@ -2,4 +2,9 @@
 
 source "https://rubygems.org"
 
-gem "irb"
+gem 'capybara'
+gem 'cuprite'
+
+# development
+gem 'irb'
+gem 'debug'
