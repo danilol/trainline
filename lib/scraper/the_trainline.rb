@@ -168,6 +168,8 @@ module Scraper
     end
 
     class Fixture
+      FIXTURE_DIR = File.join(Dir.pwd, 'fixtures')
+
       attr_reader :from, :to
       def initialize(from, to)
         @from = from.downcase
@@ -176,7 +178,8 @@ module Scraper
       
       # Save a fixture for later use
       def save_fixture(html)
-        File.write("fixtures/sample_#{from}_#{to}.html", html)
+        filepath = File.join(FIXTURE_DIR, "#{from}_#{to}.html")
+        File.write(filepath, html)
       end
     end
   end
