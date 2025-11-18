@@ -36,3 +36,14 @@ Your task is to build a bot in Ruby, that triggers searches on https://www.thetr
                              ...
 },
 ```
+
+My takes:
+
+Nice challenge, put me to think.
+Live Capybara parsing is slow because DOM is dynamic and constantly rehydrating.
+Fixture parsing is insanely fast because Nokogiri is stable and instantaneous.
+
+TODO:
+- Places lookup
+- Tests
+- Separate parser from scraper
