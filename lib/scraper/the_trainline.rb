@@ -1,3 +1,6 @@
+require 'date' 
+require 'capybara'
+require 'capybara/cuprite'
 require './lib/scraper/the_trainline/parser.rb'
 require './lib/scraper/the_trainline/fixture.rb'
 
@@ -45,11 +48,14 @@ module Scraper
         session.visit(url)
         accept_cookies(session)
         wait_page_to_load(session)
-        fixture = Scraper::TheTrainline::Fixture.new("London", "Paris")
-        fixture.save_fixture_from_session(session) if save_fixture?
+        if save_fixture?
+          fixture = Fixture.new("London", "Paris")
+          fixture.save_fixture_from_session(session) 
+        end
+
         html = fixture.extract_hydrated_html(session)
 
-        results = Parser.new(html).parse
+        results = Parser.parse(html)
       ensure
         session.driver.quit
       end
@@ -61,7 +67,7 @@ module Scraper
       end
 
       html = File.read('fixtures/london_paris.html')
-      results =  Scraper::TheTrainline::Parser.new(html).parse        
+      results = Parser.parse(html)        
     end
 
     def use_fixture?
@@ -69,7 +75,7 @@ module Scraper
     end
 
     def save_fixture?
-      true
+      false
     end
 
     def build_url(origin, destination, date)

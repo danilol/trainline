@@ -47,3 +47,11 @@ TODO:
 - Places lookup
 - Tests
 - Separate parser from scraper
+
+
+fixture.rb test I’ve separated fixture extraction, and I’d either stub Capybara or cover it with a higher-level integration test. For now I’ve focused on unit-ish specs using the saved fixture.”
+
+extra params
+- use_fixture?
+- save_fixture?
+- headless?

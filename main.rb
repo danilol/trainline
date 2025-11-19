@@ -1,7 +1,4 @@
-require_relative 'lib/scraper/the_trainline'
-require 'date'
-require 'capybara'
-require 'capybara/cuprite'
+require './lib/scraper/the_trainline.rb'
 
 require 'debug'
 

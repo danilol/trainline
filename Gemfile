@@ -6,6 +6,10 @@ gem 'capybara'
 gem 'cuprite'
 gem 'nokogiri'
 
+group :test do
+  gem 'rspec'
+end
+
 # development
 gem 'irb'
 gem 'debug'
