@@ -5,6 +5,7 @@ source "https://rubygems.org"
 gem 'capybara'
 gem 'cuprite'
 gem 'nokogiri'
+gem 'httparty'
 
 group :test do
   gem 'rspec'

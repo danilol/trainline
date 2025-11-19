@@ -1,8 +1,11 @@
+# frozen_string_literal: true
+
 require 'date' 
 require 'capybara'
 require 'capybara/cuprite'
 require './lib/scraper/the_trainline/parser.rb'
 require './lib/scraper/the_trainline/fixture.rb'
+require './lib/scraper/the_trainline/urn_locator.rb'
 
 module Scraper
   class TheTrainline

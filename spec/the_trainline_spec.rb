@@ -1,4 +1,3 @@
-# spec/scraper/the_trainline_spec.rb
 require 'spec_helper'
 require 'date'
 
