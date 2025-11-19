@@ -4,12 +4,15 @@ require 'date'
 require 'capybara'
 require 'capybara/cuprite'
 require './lib/scraper/the_trainline/parser.rb'
-require './lib/scraper/the_trainline/fixture.rb'
+require './lib/scraper/the_trainline/html_snapshot.rb'
 require './lib/scraper/the_trainline/urn_locator.rb'
 
 module Scraper
   class TheTrainline
     attr_reader :from, :to, :departure_at, :results
+    attr_accessor :snapshot_mode
+
+    @snapshot_mode = (ENV["SNAPSHOT"] == "true" ? :snapshot : :live)
 
     BASE_URL = "https://www.thetrainline.com"
 
@@ -22,16 +25,12 @@ module Scraper
     end
 
     def self.find(from, to, departure_at)
-      puts "From: #{from}"
-      puts "To: #{to}"
-      puts "Departure At: #{departure_at}"
-      scraper = new(from, to, departure_at)
-      results = scraper.fetch_results
+      new(from, to, departure_at).fetch_results
     end
 
     def fetch_results
-      if use_fixture? 
-        fetch_results_from_fixture
+      if self.class.use_snapshot?
+        fetch_results_from_snapshot
       else
         fetch_results_live
       end
@@ -42,7 +41,7 @@ module Scraper
     def fetch_results_live
       origin = URI.encode_www_form_component("urn:trainline:generic:loc:182gb") # London (Any)
       destination = URI.encode_www_form_component("urn:trainline:generic:loc:4916") # Paris (Any)
-      date = URI.encode_www_form_component("2025-11-20")
+      date = encode_param(departure_at.to_s)
 
       session = Capybara::Session.new(:cuprite)
 
@@ -51,34 +50,22 @@ module Scraper
         session.visit(url)
         accept_cookies(session)
         wait_page_to_load(session)
-        if save_fixture?
-          fixture = Fixture.new("London", "Paris")
-          fixture.save_fixture_from_session(session) 
-        end
 
-        html = fixture.extract_hydrated_html(session)
-
-        results = Parser.parse(html)
+        html_snapshot = HtmlSnapshot.new("London", "Paris", false).snapshot(session)
+        results = Parser.parse(html_snapshot)
       ensure
         session.driver.quit
       end
     end
 
-    def fetch_results_from_fixture
-      unless File.exist?('fixtures/london_paris.html')
+    def fetch_results_from_snapshot
+      path = 'fixtures/london_paris.html'
+      unless File.exist?(path)
         raise "Fixture not found: #{path}"
       end
 
       html = File.read('fixtures/london_paris.html')
       results = Parser.parse(html)        
-    end
-
-    def use_fixture?
-      true
-    end
-
-    def save_fixture?
-      false
     end
 
     def build_url(origin, destination, date)
@@ -110,6 +97,10 @@ module Scraper
       sleep 1.5
     end
 
+    def encode_param(param)
+      URI.encode_www_form_component(param.to_s)
+    end
+
     def setup_capybara
       Capybara.default_driver = :cuprite
       Capybara.default_max_wait_time = 20
@@ -124,6 +115,14 @@ module Scraper
           js_errors: false
         )
       end
+    end
+
+    def self.use_snapshot?
+      @snapshot_mode == :snapshot
+    end
+
+    def self.use_snapshot=(bool)
+      @snapshot_mode = bool ? :snapshot : :live
     end
   end
 end

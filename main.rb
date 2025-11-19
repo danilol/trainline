@@ -8,8 +8,7 @@ puts 'This is the beginning of the program'
 
 # urn = Scraper::TheTrainline::UrnLocator.find_urn('Londres')
 # pp urn
-
-results = Scraper::TheTrainline.find('London', 'Berlin', DateTime.now)
+results = Scraper::TheTrainline.find('London', 'Berlin', Date.today + 1)
 pp results
 
 

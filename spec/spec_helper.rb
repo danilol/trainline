@@ -19,4 +19,8 @@ RSpec.configure do |config|
     mocks.verify_partial_doubles = true
   end
   config.shared_context_metadata_behavior = :apply_to_host_groups
+
+  config.before(:each) do
+    Scraper::TheTrainline.use_snapshot = true
+  end
 end
