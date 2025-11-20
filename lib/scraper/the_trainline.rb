@@ -1,8 +1,7 @@
 # frozen_string_literal: true
 
 require 'date' 
-require 'capybara'
-require 'capybara/cuprite'
+require "./config/capybara"
 require './lib/scraper/the_trainline/parser.rb'
 require './lib/scraper/the_trainline/html_snapshot.rb'
 require './lib/scraper/the_trainline/urn_locator.rb'
@@ -21,7 +20,6 @@ module Scraper
       @to = to
       @departure_at = departure_at
       @results = []
-      setup_capybara
     end
 
     def self.find(from, to, departure_at)
@@ -39,19 +37,19 @@ module Scraper
     private
 
     def fetch_results_live
-      origin = URI.encode_www_form_component("urn:trainline:generic:loc:182gb") # London (Any)
-      destination = URI.encode_www_form_component("urn:trainline:generic:loc:4916") # Paris (Any)
+      origin_urn = Scraper::TheTrainline::UrnLocator.find_urn(@from)
+      destination_urn = Scraper::TheTrainline::UrnLocator.find_urn(@to)
       date = encode_param(departure_at.to_s)
 
       session = Capybara::Session.new(:cuprite)
 
       begin
-        url = build_url(origin, destination, date)
+        url = build_url(origin_urn, destination_urn, date)
         session.visit(url)
         accept_cookies(session)
         wait_page_to_load(session)
 
-        html_snapshot = HtmlSnapshot.new("London", "Paris", false).snapshot(session)
+        html_snapshot = HtmlSnapshot.new(@from, @to, true).snapshot(session)
         results = Parser.parse(html_snapshot)
       ensure
         session.driver.quit
@@ -101,21 +99,7 @@ module Scraper
       URI.encode_www_form_component(param.to_s)
     end
 
-    def setup_capybara
-      Capybara.default_driver = :cuprite
-      Capybara.default_max_wait_time = 20
 
-      Capybara.register_driver(:cuprite) do |app|
-        Capybara::Cuprite::Driver.new(
-          app,
-          headless: false,
-          window_size: [1280, 900],
-          timeout: 30,
-          process_timeout: 40,
-          js_errors: false
-        )
-      end
-    end
 
     def self.use_snapshot?
       @snapshot_mode == :snapshot

@@ -55,3 +55,6 @@ extra params
 - use_fixture?
 - save_fixture?
 - headless?
+
+Runs only in headless=false and requires solving the captcha. If headless=true script cannot solve captcha and will fail.
+noticed different search pages based on location (it will break, it was developed in germany)
