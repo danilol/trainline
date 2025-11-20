@@ -5,13 +5,11 @@ require "./config/capybara.rb"
 require "./config/scraper.rb"
 require './lib/scraper/the_trainline/parser.rb'
 require './lib/scraper/the_trainline/html_snapshot.rb'
-require './lib/scraper/the_trainline/urn_locator.rb'
+require './lib/scraper/the_trainline/url_builder.rb'
 
 module Scraper
   class TheTrainline
     attr_reader :from, :to, :departure_at, :results, :scraper_config
-
-    BASE_URL = "https://www.thetrainline.com"
 
     def initialize(from, to, departure_at, scraper_config)
       @from = from
@@ -36,15 +34,11 @@ module Scraper
     private
 
     def fetch_results_live
-      origin_urn = Scraper::TheTrainline::UrnLocator.find_urn(@from)
-      destination_urn = Scraper::TheTrainline::UrnLocator.find_urn(@to)
-      date = encode_param(departure_at.to_s)
-
       session = Capybara::Session.new(:cuprite)
 
       begin
-        url = build_url(origin_urn, destination_urn, date)
-        session.visit(url)
+        url_builder = UrlBuilder.new(@from, @to, @departure_at).build
+        session.visit(url_builder)
         accept_cookies(session)
         wait_page_to_load(session)
 
@@ -63,10 +57,6 @@ module Scraper
 
       html = File.read('fixtures/london_paris.html')
       results = Parser.parse(html)        
-    end
-
-    def build_url(origin, destination, date)
-      "#{BASE_URL}/book/results?origin=#{origin}&destination=#{destination}&outwardDate=#{date}"
     end
 
     def accept_cookies(session)
