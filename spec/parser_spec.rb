@@ -1,5 +1,3 @@
-require 'spec_helper'
-
 RSpec.describe Scraper::TheTrainline::Parser do
   let(:html_content) { fixture("london_paris.html") }
 

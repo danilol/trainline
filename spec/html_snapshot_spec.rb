@@ -1,9 +1,3 @@
-# frozen_string_literal: true
-
-require "spec_helper"
-require "tmpdir"
-require "./lib/scraper/the_trainline/html_snapshot"
-
 RSpec.describe Scraper::TheTrainline::HtmlSnapshot do
   let(:from) { "London" }
   let(:to)   { "Paris" }

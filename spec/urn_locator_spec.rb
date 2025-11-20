@@ -1,6 +1,3 @@
-require "spec_helper"
-require "json"
-
 RSpec.describe Scraper::TheTrainline::UrnLocator do
   let(:response_body) do
     {

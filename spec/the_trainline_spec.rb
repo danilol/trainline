@@ -1,14 +1,12 @@
-require 'spec_helper'
-require 'date'
-
 RSpec.describe Scraper::TheTrainline do
   describe '.find' do
     let(:from) { 'London' }
     let(:to)   { 'Paris' }
     let(:departure_at) { DateTime.new(2025, 11, 20, 9, 0, 0) }
+    let(:scraper_config) { Scraper::TheTrainline::Config.new(mode: :snapshot) }
 
     it 'returns an array of segments' do
-      results = described_class.find(from, to, departure_at)
+      results = described_class.find(from, to, departure_at, scraper_config: scraper_config)
 
       expect(results).to be_an(Array)
       expect(results).not_to be_empty

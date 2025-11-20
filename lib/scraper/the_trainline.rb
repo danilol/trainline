@@ -1,33 +1,32 @@
 # frozen_string_literal: true
 
 require 'date' 
-require "./config/capybara"
+require "./config/capybara.rb"
+require "./config/scraper.rb"
 require './lib/scraper/the_trainline/parser.rb'
 require './lib/scraper/the_trainline/html_snapshot.rb'
 require './lib/scraper/the_trainline/urn_locator.rb'
 
 module Scraper
   class TheTrainline
-    attr_reader :from, :to, :departure_at, :results
-    attr_accessor :snapshot_mode
-
-    @snapshot_mode = (ENV["SNAPSHOT"] == "true" ? :snapshot : :live)
+    attr_reader :from, :to, :departure_at, :results, :scraper_config
 
     BASE_URL = "https://www.thetrainline.com"
 
-    def initialize(from, to, departure_at)
+    def initialize(from, to, departure_at, scraper_config)
       @from = from
       @to = to
       @departure_at = departure_at
       @results = []
+      @scraper_config = scraper_config
     end
 
-    def self.find(from, to, departure_at)
-      new(from, to, departure_at).fetch_results
+    def self.find(from, to, departure_at, scraper_config: Scraper::TheTrainline::Config.new)
+      new(from, to, departure_at, scraper_config).fetch_results
     end
 
     def fetch_results
-      if self.class.use_snapshot?
+      if @scraper_config.snapshot?
         fetch_results_from_snapshot
       else
         fetch_results_live
@@ -97,16 +96,6 @@ module Scraper
 
     def encode_param(param)
       URI.encode_www_form_component(param.to_s)
-    end
-
-
-
-    def self.use_snapshot?
-      @snapshot_mode == :snapshot
-    end
-
-    def self.use_snapshot=(bool)
-      @snapshot_mode = bool ? :snapshot : :live
     end
   end
 end
