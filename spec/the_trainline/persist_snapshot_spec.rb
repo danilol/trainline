@@ -39,7 +39,7 @@ RSpec.describe Scraper::TheTrainline::PersistSnapshot do
 
       it "creates a valid filename" do
         persist.write
-        files = Dir.glob(File.join(temp_dir, "münchen_béziers.html"))
+        files = Dir.glob(File.join(temp_dir, "munchen_beziers.html"))
         expect(files).not_to be_empty
       end
     end
