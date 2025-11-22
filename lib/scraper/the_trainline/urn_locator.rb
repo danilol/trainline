@@ -44,7 +44,7 @@ module Scraper
           translated_name = locations.find { |loc| loc["translatedName"] ? loc["translatedName"].downcase.include?(normalized) : false }
           return extract_location_code(translated_name) if translated_name
 
-          extract_location_code(locations.first) # TODO: not very accurated
+          extract_location_code(locations.first) # TODO: not very accurate
         end
 
         def extract_location_code(location)

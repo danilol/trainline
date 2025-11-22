@@ -1,91 +1,47 @@
 # frozen_string_literal: true
 
 require 'date' 
-require "./config/capybara.rb"
-require "./config/scraper.rb"
+require "./config/app_config.rb"
 require './lib/scraper/the_trainline/parser.rb'
-require './lib/scraper/the_trainline/html_snapshot.rb'
+require './lib/scraper/the_trainline/persist_snapshot.rb'
+require './lib/scraper/the_trainline/snapshot_fetcher.rb'
+require './lib/scraper/the_trainline/live_fetcher.rb'
 require './lib/scraper/the_trainline/url_builder.rb'
 
 module Scraper
   class TheTrainline
-    attr_reader :from, :to, :departure_at, :results, :scraper_config
+    attr_reader :from, :to, :departure_at, :results, :app_config
 
-    def initialize(from, to, departure_at, scraper_config)
+    def initialize(from, to, departure_at, app_config)
       @from = from
       @to = to
       @departure_at = departure_at
       @results = []
-      @scraper_config = scraper_config
+      @app_config = app_config
     end
 
-    def self.find(from, to, departure_at, scraper_config: Scraper::TheTrainline::Config.new)
-      new(from, to, departure_at, scraper_config).fetch_results
+    def self.find(from, to, departure_at, app_config: Scraper::TheTrainline::AppConfig.new)
+      new(from, to, departure_at, app_config).fetch_results
     end
 
     def fetch_results
-      if @scraper_config.snapshot?
-        fetch_results_from_snapshot
-      else
-        fetch_results_live
-      end
+      html = fetcher.fetch
+      @results = Parser.parse(html)
     end
 
     private
 
-    def fetch_results_live
-      session = Capybara::Session.new(:cuprite)
-
-      begin
-        url_builder = UrlBuilder.new(@from, @to, @departure_at).build
-        session.visit(url_builder)
-        accept_cookies(session)
-        wait_page_to_load(session)
-
-        html_snapshot = HtmlSnapshot.new(@from, @to, true).snapshot(session)
-        results = Parser.parse(html_snapshot)
-      ensure
-        session.driver.quit
+    def fetcher
+      if @app_config.snapshot?
+        Scraper::TheTrainline::SnapshotFetcher.new(@from, @to, @app_config)
+      else
+        url = Scraper::TheTrainline::UrlBuilder.new(@from, @to, @departure_at).build
+        Scraper::TheTrainline::LiveFetcher.new(url, app_config)
       end
     end
 
-    def fetch_results_from_snapshot
-      path = 'fixtures/london_paris.html'
-      unless File.exist?(path)
-        raise "Fixture not found: #{path}"
-      end
-
-      html = File.read('fixtures/london_paris.html')
-      results = Parser.parse(html)        
-    end
-
-    def accept_cookies(session)
-      # 1. Wait for and accept cookies (mandatory!)
-      if session.has_css?('#onetrust-accept-btn-handler', wait: 10)
-        session.find('#onetrust-accept-btn-handler').click
-      end
-    end
-
-    def wait_page_to_load(session)
-      # 2. Wait for CAPTCHA resolution (you do this manually)
-      puts "Solve captcha if needed..."
-      sleep 10 # or wait until captcha disappears
-
-      # 3. Wait for journey list hydration
-      puts "Wait for journey list hydration..."
-      session.has_css?('[role="tabpanel"]', wait: 20)
-
-      # 4. Wait for at least one journey row to exist
-      puts "Wait for at least one journey row to exist..."
-      session.has_css?('[data-test*="journey-row"], [id^="result-row-journey-"]', wait: 20)
-
-      # Let Trainline finish last DOM updates
-      session.has_no_css?('[data-test="loading"]', wait: 15) rescue nil
-      sleep 1.5
-    end
-
-    def encode_param(param)
-      URI.encode_www_form_component(param.to_s)
+    def persist_snapshot(html)
+      Scraper::TheTrainline::PersistSnapshot.new(html, app_config).write(html)
     end
   end
 end
