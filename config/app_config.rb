@@ -5,10 +5,11 @@ module Scraper
     class AppConfig
       VALID_MODES = %i[live snapshot].freeze
 
-      attr_reader :mode
+      attr_reader :mode, :headless
 
-      def initialize(mode: default_mode)
+      def initialize(mode: default_mode, headless: default_headless)
         @mode = normalize_mode(mode)
+        @headless = default_headless
       end
 
       def snapshot?
@@ -29,6 +30,10 @@ module Scraper
         ENV.fetch("SNAPSHOT", "false") == "true" ? :snapshot : :live
       end
 
+      def default_headless
+        ENV["HEADLESS"] == "true"
+      end
+
       def normalize_mode(value)
         sym = value.to_sym
         unless VALID_MODES.include?(sym)
@@ -39,3 +44,6 @@ module Scraper
     end
   end
 end
+
+# Global instance
+APP_CONFIG = Scraper::TheTrainline::AppConfig.new
