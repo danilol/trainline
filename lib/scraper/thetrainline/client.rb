@@ -23,6 +23,7 @@ module Scraper
 
       def fetch_results
         html = fetcher.fetch
+        create_snapshot_file(html) if @app_config.create_snapshot_file
         @results = Scraper::Thetrainline::Parser.parse(html, @logger)
       end
 
@@ -33,9 +34,7 @@ module Scraper
           Scraper::Thetrainline::SnapshotFetcher.new(@from, @to, @app_config)
         else
           url = Scraper::Thetrainline::UrlBuilder.new(@from, @to, @departure_at, @logger).build
-          content = Scraper::Thetrainline::LiveFetcher.new(url, @app_config)
-          create_snapshot_file(content) if @app_config.create_snapshot_file
-          content
+          Scraper::Thetrainline::LiveFetcher.new(url, @app_config)
         end
       end
 

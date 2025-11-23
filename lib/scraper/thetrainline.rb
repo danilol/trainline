@@ -2,7 +2,6 @@
 
 require "./config/app_config"
 require "./lib/scraper/thetrainline/client"
-
 require "./lib/scraper/thetrainline/persist_snapshot"
 require "./lib/scraper/thetrainline/snapshot_fetcher"
 require "./lib/scraper/thetrainline/live_fetcher"
