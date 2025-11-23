@@ -1,11 +1,15 @@
+require "fileutils"
+require "./lib/scraper/thetrainline/persist_snapshot"
+require "./lib/scraper/thetrainline/utils"
+
 RSpec.describe Scraper::Thetrainline::PersistSnapshot do
   let(:html_content) { "<html><body>snapshot</body></html>" }
-  let(:temp_dir) { Dir.mktmpdir }
-  let(:from) { "London" }
-  let(:to) { "Paris" }
-  
+  let(:temp_dir)      { Dir.mktmpdir }
+  let(:from)          { "London" }
+  let(:to)            { "Paris" }
+
   let(:app_config) do
-    instance_double("Scraper::Thetrainline::Config", fixtures_path: temp_dir)
+    instance_double("Scraper::Thetrainline::AppConfig", fixtures_path: temp_dir)
   end
 
   subject(:persist) { described_class.new(from, to, html_content, app_config) }
@@ -24,20 +28,25 @@ RSpec.describe Scraper::Thetrainline::PersistSnapshot do
       expect(File.read(expected_path)).to eq(html_content)
     end
 
-    it "returns nil and logs error when writing fails" do
+    it "returns nil and logs an error when writing fails" do
+      fake_logger = instance_double("Scraper::Thetrainline::Logger", error: nil)
+      allow(fake_logger).to receive(:error)
+
+      stub_const("Scraper::Thetrainline::LOGGER", fake_logger)
+
       allow(File).to receive(:write).and_raise(StandardError, "disk full")
-      
-      expect { persist.write }
-        .to output(/Failed to store snapshot: disk full/).to_stdout
-      
-      expect(persist.write).to be_nil
+
+      expect(fake_logger).to receive(:error).with(/\[HtmlSnapshot\] Failed to store snapshot: disk full/)
+
+      result = persist.write
+      expect(result).to be_nil
     end
 
     context "with special characters in route names" do
       let(:from) { "München" }
-      let(:to) { "Béziers" }
+      let(:to)   { "Béziers" }
 
-      it "creates a valid filename" do
+      it "creates a valid sanitized filename" do
         persist.write
         files = Dir.glob(File.join(temp_dir, "munchen_beziers.html"))
         expect(files).not_to be_empty

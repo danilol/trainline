@@ -5,11 +5,12 @@ module Scraper
     class AppConfig
       VALID_MODES = %i[live snapshot].freeze
 
-      attr_reader :mode, :headless
+      attr_reader :mode, :headless, :logs_enabled
 
-      def initialize(mode: default_mode, headless: default_headless)
+      def initialize(mode: default_mode, headless: default_headless, logs_enabled: true)
         @mode = normalize_mode(mode)
         @headless = default_headless
+        @logs_enabled = logs_enabled
       end
 
       def snapshot?
@@ -30,6 +31,8 @@ module Scraper
         ENV.fetch("SNAPSHOT", "false") == "true" ? :snapshot : :live
       end
 
+      # TODO: HEADLESS not fully functioning. Due to time constraints 
+      # and Trainline’s bot protection, it mostly works only in non-headless mode.
       def default_headless
         ENV["HEADLESS"] == "true"
       end

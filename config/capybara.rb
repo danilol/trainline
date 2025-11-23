@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'capybara'
 require 'capybara/cuprite'
 
@@ -12,8 +14,8 @@ Capybara.register_driver(:cuprite) do |app|
       'disable-blink-features' => 'AutomationControlled'
     },
     window_size: [1280, 900],
-    timeout: 30,
-    process_timeout: 40,
+    timeout: 10,
+    process_timeout: 10,
     js_errors: false
   )
 end

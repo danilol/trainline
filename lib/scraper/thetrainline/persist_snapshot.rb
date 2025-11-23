@@ -26,7 +26,7 @@ module Scraper
 
           true
         rescue StandardError => e
-          puts "[HtmlSnapshot] Failed to store snapshot: #{e.message}"
+          LOGGER.error "[HtmlSnapshot] Failed to store snapshot: #{e.message}"
           nil
         end
       end

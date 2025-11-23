@@ -19,4 +19,10 @@ RSpec.configure do |config|
     mocks.verify_partial_doubles = true
   end
   config.shared_context_metadata_behavior = :apply_to_host_groups
+
+  config.before(:suite) do
+    # Disable logging globally during test suite
+    Scraper::Thetrainline.send(:remove_const, :LOGGER)
+    Scraper::Thetrainline::LOGGER = Scraper::Thetrainline::Logger.new(enabled: false)
+  end
 end

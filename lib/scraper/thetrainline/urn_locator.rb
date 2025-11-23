@@ -25,7 +25,8 @@ module Scraper
             query: { locale: locale, searchTerm: search_term },
             timeout: 10
           )
-        rescue StandardError
+        rescue StandardError => e
+          LOGGER.error "[UrnLocator] Failed to fetch locations: #{e.message}"
           nil
         end
 
