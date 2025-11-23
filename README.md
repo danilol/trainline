@@ -176,22 +176,48 @@ Live-browser scraping is intentionally not tested.
 ## 🗂 Project Structure
 
 ```
-lib/
-  scraper/
-    thetrainline/
-      client.rb
-      live_fetcher.rb
-      snapshot_fetcher.rb
-      parser.rb
-      url_builder.rb
-      models/
-        segment.rb
-        fare.rb
-    thetrainline.rb   # defines .find API
-config/
-  app_config.rb
-snapshots/
-spec/
+challenge/
+├── config/
+│   ├── app_config.rb
+│   └── capybara.rb
+│
+├── fixtures/
+│   └── (snapshot HTML files generated when CREATE_SNAPSHOT_FILE=true)
+│
+├── lib/
+│   └── scraper/
+│       └── thetrainline/
+│           ├── models/
+│           │   ├── fare.rb
+│           │   └── segment.rb
+│           │
+│           ├── client.rb
+│           ├── hydrate_snapshot.rb
+│           ├── live_fetcher.rb
+│           ├── logger.rb
+│           ├── parser.rb
+│           ├── persist_snapshot.rb
+│           ├── snapshot_fetcher.rb
+│           ├── url_builder.rb
+│           ├── urn_locator.rb
+│           ├── utils.rb
+│           └── thetrainline.rb   # exposes .find API
+│
+├── spec/
+│   ├── config/
+│   ├── fixtures/
+│   └── thetrainline/
+│       ├── spec_helper.rb
+│       └── thetrainline_spec.rb
+│
+├── main.rb          # development helper
+├── Gemfile
+├── .rspec
+├── .env
+├── .env.sample
+├── .gitignore
+└── README.md
+
 ```
 
 ---
