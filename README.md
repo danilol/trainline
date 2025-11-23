@@ -69,6 +69,33 @@ bundle install
 
 ## ⚙️ Environment Variables
 
+### CREATE_SNAPSHOT_FILE
+
+Automatically saves the scraped HTML to `fixtures/` when running in live mode.
+```bash
+CREATE_SNAPSHOT_FILE=false  # do not save snapshots (default)
+CREATE_SNAPSHOT_FILE=true   # save HTML to fixtures/origin_destination.html
+
+# Example:
+CREATE_SNAPSHOT_FILE=true bundle exec ruby -e "require './lib/scraper/thetrainline'; Scraper::Thetrainline.find('Berlin', 'Munich', Date.today + 1)"
+```
+
+When enabled, successful live scrapes will generate a file in `fixtures/` with the format:
+```
+fixtures/origin_destination.html
+```
+
+For example:
+- `fixtures/london_paris.html`
+- `fixtures/berlin_munich.html`
+
+This is useful for:
+- Building a library of snapshots for testing
+- Creating offline fixtures for faster development
+- Debugging HTML structure changes
+
+City names are automatically slugified (lowercased, accents removed, spaces converted to underscores).
+
 ### USE_SAVED_FILE
 
 Controls whether the scraper loads static HTML snapshots or performs a real browser fetch.
@@ -78,7 +105,7 @@ USE_SAVED_FILE=false # launch browser and perform a real scrape (default)
 USE_SAVED_FILE=true  # use offline pre-saved snapshots (recommended)
 
 example:
-USE_SAVED_FILE=true Scraper::Thetrainline.find('Lisboa', 'Faro', Date.today + 1)
+USE_SAVED_FILE=true bundle exec ruby -e "require './lib/scraper/thetrainline'; Scraper::Thetrainline.find('Lisboa', 'Faro', Date.today + 1)"
 ```
 
 Snapshot mode requires HTML files stored in `snapshots/`.  
@@ -106,7 +133,7 @@ HEADLESS=false  # visible browser window (recommended) (default)
 HEADLESS=true   # try headless mode (often blocked by Trainline)
 
 example:
-HEADLESS=true Scraper::Thetrainline.find('Lisboa', 'Faro', Date.today + 1)
+HEADLESS=true bundle exec ruby -e "require './lib/scraper/thetrainline'; Scraper::Thetrainline.find('London', 'Paris', Date.today + 1)"
 ```
 
 A TODO exists in the code acknowledging this limitation.
