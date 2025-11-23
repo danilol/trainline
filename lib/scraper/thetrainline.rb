@@ -1,28 +1,30 @@
 # frozen_string_literal: true
 
-require 'date' 
-require "./config/app_config.rb"
-require './lib/scraper/thetrainline/client.rb'
+require "date"
+require "./config/app_config"
+require "./lib/scraper/thetrainline/client"
 
-require './lib/scraper/thetrainline/persist_snapshot.rb'
-require './lib/scraper/thetrainline/snapshot_fetcher.rb'
-require './lib/scraper/thetrainline/live_fetcher.rb'
-require './lib/scraper/thetrainline/url_builder.rb'
-require './lib/scraper/thetrainline/models/segment.rb'
-require './lib/scraper/thetrainline/models/fare.rb'
-require './lib/scraper/thetrainline/logger.rb'
+require "./lib/scraper/thetrainline/persist_snapshot"
+require "./lib/scraper/thetrainline/snapshot_fetcher"
+require "./lib/scraper/thetrainline/live_fetcher"
+require "./lib/scraper/thetrainline/url_builder"
+require "./lib/scraper/thetrainline/models/segment"
+require "./lib/scraper/thetrainline/models/fare"
+require "./lib/scraper/thetrainline/logger"
 
 module Scraper
-  # NOTE: This is a namespace for the Thetrainline scraper. 
-  # The challenge description calls it "Thetrainline", what I decided to follow.
-  # Althoug "TheTrainline" (the_trainline) would be more a Ruby convention, 
-  # I decided to follow the challenge description.
   module Thetrainline
-    # Global instance
-    LOGGER = Scraper::Thetrainline::Logger.new(enabled: APP_CONFIG.logs_enabled)
-    
-    def self.find(from, to, departure_at, app_config: APP_CONFIG)
-      Client.new(from, to, departure_at, app_config).fetch_results
+    class << self
+      attr_accessor :app_config, :logger
+    end
+
+    # Default configuration (tests can replace this)
+    self.app_config = AppConfig.new
+    self.logger = Logger.new(enabled: app_config.logs_enabled)
+
+    # Public API
+    def self.find(from, to, departure_at)
+      Client.new(from, to, departure_at, app_config, logger).fetch_results
     end
   end
 end

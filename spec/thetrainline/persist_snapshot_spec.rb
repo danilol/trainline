@@ -12,7 +12,9 @@ RSpec.describe Scraper::Thetrainline::PersistSnapshot do
     instance_double("Scraper::Thetrainline::AppConfig", fixtures_path: temp_dir)
   end
 
-  subject(:persist) { described_class.new(from, to, html_content, app_config) }
+  let(:logger) { instance_double(Scraper::Thetrainline::Logger) }
+
+  subject(:persist) { described_class.new(from, to, html_content, app_config, logger) }
 
   # Clean up temp directory after each test
   after { FileUtils.rm_rf(temp_dir) }
@@ -29,14 +31,11 @@ RSpec.describe Scraper::Thetrainline::PersistSnapshot do
     end
 
     it "returns nil and logs an error when writing fails" do
-      fake_logger = instance_double("Scraper::Thetrainline::Logger", error: nil)
-      allow(fake_logger).to receive(:error)
-
-      stub_const("Scraper::Thetrainline::LOGGER", fake_logger)
+      allow(logger).to receive(:error)
 
       allow(File).to receive(:write).and_raise(StandardError, "disk full")
 
-      expect(fake_logger).to receive(:error).with(/\[HtmlSnapshot\] Failed to store snapshot: disk full/)
+      expect(logger).to receive(:error).with(/\[HtmlSnapshot\] Failed to store snapshot: disk full/)
 
       result = persist.write
       expect(result).to be_nil

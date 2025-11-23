@@ -10,8 +10,8 @@ module Scraper
       API_URL = "https://www.thetrainline.com/api/locations-search/v2/search"
 
       class << self
-        def find_urn(search_term, locale: "en-us")
-          data = request_locations(search_term, locale)
+        def find_urn(search_term, logger, locale: "en-us")
+          data = request_locations(search_term, logger, locale)
           return nil unless data && data["searchLocations"].is_a?(Array)
 
           choose_best_match(search_term, data["searchLocations"])
@@ -19,14 +19,14 @@ module Scraper
 
         private
 
-        def request_locations(search_term, locale)
+        def request_locations(search_term, logger, locale)
           HTTParty.get(
             API_URL,
             query: { locale: locale, searchTerm: search_term },
             timeout: 10
           )
         rescue StandardError => e
-          LOGGER.error "[UrnLocator] Failed to fetch locations: #{e.message}"
+          logger.error "[UrnLocator] Failed to fetch locations: #{e.message}"
           nil
         end
 

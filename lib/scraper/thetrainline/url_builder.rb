@@ -6,10 +6,11 @@ module Scraper
     class UrlBuilder
       BASE_URL = "https://www.thetrainline.com"
 
-      def initialize(origin, destination, date)
+      def initialize(origin, destination, date, logger)
         @origin = origin
         @destination = destination
         @date = date
+        @logger = logger
       end
 
       def build
@@ -25,7 +26,7 @@ module Scraper
       end
 
       def find_urn_locator(location)
-        Scraper::Thetrainline::UrnLocator.find_urn(location)
+        Scraper::Thetrainline::UrnLocator.find_urn(location, @logger)
       end
     end
   end

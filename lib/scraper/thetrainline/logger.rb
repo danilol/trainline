@@ -3,6 +3,7 @@
 module Scraper
   module Thetrainline
     class Logger
+
       def initialize(enabled: true)
         @enabled = enabled
       end

@@ -7,9 +7,10 @@ Capybara.default_driver = :cuprite
 Capybara.default_max_wait_time = 20
 
 Capybara.register_driver(:cuprite) do |app|
+  app_config = Scraper::Thetrainline.app_config
   Capybara::Cuprite::Driver.new(
     app,
-    headless: APP_CONFIG.headless,
+    headless: app_config.headless,
     browser_options: {
       'disable-blink-features' => 'AutomationControlled'
     },

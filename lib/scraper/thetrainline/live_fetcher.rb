@@ -6,6 +6,8 @@ module Scraper
   module Thetrainline
     class LiveFetcher
       attr_reader :url, :app_config
+      # TODO: Make timeout configurable 
+      TIMEOUT = 10
 
       def initialize(url, app_config)
         @url = url
@@ -28,22 +30,21 @@ module Scraper
       private
 
       def accept_cookies(session)
-        if session.has_css?('#onetrust-accept-btn-handler', wait: 10)
+        if session.has_css?('#onetrust-accept-btn-handler', wait: 1)
           session.find('#onetrust-accept-btn-handler').click
         end
       end
 
       def wait_page_to_load(session)
-        # "Solve captcha if needed..."
-        sleep 10 # or wait until captcha disappears
+        # manually solve captcha if needed...
+        # TODO: Remove this sleep when captcha is solved automatically
+        sleep TIMEOUT
 
-        # "Wait for journey list hydration..."
-        session.has_css?('[role="tabpanel"]', wait: 20)
+        session.has_css?('[role="tabpanel"]', wait: TIMEOUT)
 
-        # "Wait for at least one journey row to exist..."
-        session.has_css?('[data-test*="journey-row"], [id^="result-row-journey-"]', wait: 20)
+        session.has_css?('[data-test*="journey-row"], [id^="result-row-journey-"]', wait: TIMEOUT)
 
-        session.has_no_css?('[data-test="loading"]', wait: 15) rescue nil
+        session.has_no_css?('[data-test="loading"]', wait: TIMEOUT) rescue nil
       end
     end
   end

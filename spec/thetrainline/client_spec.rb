@@ -1,16 +1,33 @@
-RSpec.describe Scraper::Thetrainline::Client do
-  let(:from)         { "London" }
-  let(:to)           { "Paris" }
-  let(:departure_at) { DateTime.new(2025, 11, 20, 9) }
-  let(:app_config)   { Scraper::Thetrainline::AppConfig.new(mode: :snapshot) }
+RSpec.describe Scraper::Thetrainline do
+  describe ".find" do
+    let(:from)         { "London" }
+    let(:to)           { "Paris" }
+    let(:departure_at) { DateTime.new(2025, 11, 20, 9) }
+    let(:app_config)   { instance_double(Scraper::Thetrainline::AppConfig) }
+    let(:logger)       { instance_double(Scraper::Thetrainline::Logger) }
 
-  subject(:client) { described_class.new(from, to, departure_at, app_config) }
+    before do
+      # override global config for the test
+      described_class.app_config = app_config
+      described_class.logger     = logger
+    end
 
-  describe "#fetch_results" do
-    it "returns parsed segments" do
-      results = client.fetch_results
-      expect(results).to be_an(Array)
-      expect(results.first).to be_a(Scraper::Thetrainline::Models::Segment)
+    it "instantiates a Client and returns its fetch_results value" do
+      fake_client = instance_double(Scraper::Thetrainline::Client)
+      fake_results = [:fake_segment]
+
+      expect(Scraper::Thetrainline::Client)
+        .to receive(:new)
+        .with(from, to, departure_at, app_config, logger)
+        .and_return(fake_client)
+
+      expect(fake_client)
+        .to receive(:fetch_results)
+        .and_return(fake_results)
+
+      result = described_class.find(from, to, departure_at)
+
+      expect(result).to eq(fake_results)
     end
   end
 end

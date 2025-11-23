@@ -3,13 +3,14 @@
 module Scraper
   module Thetrainline
     class AppConfig
+
       VALID_MODES = %i[live snapshot].freeze
 
       attr_reader :mode, :headless, :logs_enabled
 
-      def initialize(mode: default_mode, headless: default_headless, logs_enabled: true)
+      def initialize(mode: default_mode, headless: false, logs_enabled: true)
         @mode = normalize_mode(mode)
-        @headless = default_headless
+        @headless = headless
         @logs_enabled = logs_enabled
       end
 
@@ -33,7 +34,7 @@ module Scraper
 
       # TODO: HEADLESS not fully functioning. Due to time constraints 
       # and Trainline’s bot protection, it mostly works only in non-headless mode.
-      def default_headless
+      def headless?
         ENV["HEADLESS"] == "true"
       end
 
@@ -47,6 +48,3 @@ module Scraper
     end
   end
 end
-
-# Global instance
-APP_CONFIG = Scraper::Thetrainline::AppConfig.new

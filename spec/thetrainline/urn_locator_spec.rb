@@ -8,7 +8,9 @@ RSpec.describe Scraper::Thetrainline::UrnLocator do
         { "code" => "urn:trainline:generic:loc:1002", "name" => "Lisbon", "translatedName" => "Lisboa" }
       ]
     }
-  end  
+  end
+  
+  let(:logger) { instance_double(Scraper::Thetrainline::Logger) }
 
   describe 'find_urn' do  
     before do
@@ -16,29 +18,28 @@ RSpec.describe Scraper::Thetrainline::UrnLocator do
     end
 
     it "returns exact match URN" do
-      urn = described_class.find_urn("Berlin (Any)")
+      urn = described_class.find_urn("Berlin (Any)", logger)
       expect(urn).to eq("urn:trainline:generic:loc:1000")
     end
 
     it "returns prefix match URN" do
-      urn = described_class.find_urn("Berlin")
+      urn = described_class.find_urn("Berlin", logger)
       expect(urn).to eq("urn:trainline:generic:loc:1000")
     end
 
     it "returns substring match URN" do
-      urn = described_class.find_urn("erl")
+      urn = described_class.find_urn("erl", logger)
       expect(urn).to eq("urn:trainline:generic:loc:1000")
     end
 
     it "returns translated name match URN when exists" do
-      urn = described_class.find_urn("lisboa")
+      urn = described_class.find_urn("lisboa", logger)
       expect(urn).to eq("urn:trainline:generic:loc:1002")
     end
 
     it "returns first result if no match" do
-      urn = described_class.find_urn("nonexistent")
+      urn = described_class.find_urn("nonexistent", logger)
       expect(urn).to eq("urn:trainline:generic:loc:1000")
     end
-
   end
 end

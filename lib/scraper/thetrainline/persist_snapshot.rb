@@ -4,13 +4,14 @@ require "./lib/scraper/thetrainline/utils.rb"
 module Scraper
   module Thetrainline
     class PersistSnapshot
-      attr_reader :from, :to, :content, :app_config
+      attr_reader :from, :to, :content, :app_config, :logger
 
-      def initialize(from, to, content, app_config)
+      def initialize(from, to, content, app_config, logger)
         @from = from
         @to = to
         @content = content
         @app_config = app_config
+        @logger = logger
       end
 
       def write
@@ -26,7 +27,7 @@ module Scraper
 
           true
         rescue StandardError => e
-          LOGGER.error "[HtmlSnapshot] Failed to store snapshot: #{e.message}"
+          @logger.error "[HtmlSnapshot] Failed to store snapshot: #{e.message}"
           nil
         end
       end
