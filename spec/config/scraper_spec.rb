@@ -1,4 +1,4 @@
-RSpec.describe Scraper::TheTrainline::AppConfig do
+RSpec.describe Scraper::Thetrainline::AppConfig do
   describe "default mode" do
     around do |example|
       original = ENV["SNAPSHOT"]

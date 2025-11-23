@@ -1,11 +1,11 @@
-RSpec.describe Scraper::TheTrainline::PersistSnapshot do
+RSpec.describe Scraper::Thetrainline::PersistSnapshot do
   let(:html_content) { "<html><body>snapshot</body></html>" }
   let(:temp_dir) { Dir.mktmpdir }
   let(:from) { "London" }
   let(:to) { "Paris" }
   
   let(:app_config) do
-    instance_double("Scraper::TheTrainline::Config", fixtures_path: temp_dir)
+    instance_double("Scraper::Thetrainline::Config", fixtures_path: temp_dir)
   end
 
   subject(:persist) { described_class.new(from, to, html_content, app_config) }

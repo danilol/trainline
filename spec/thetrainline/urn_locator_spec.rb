@@ -1,4 +1,4 @@
-RSpec.describe Scraper::TheTrainline::UrnLocator do
+RSpec.describe Scraper::Thetrainline::UrnLocator do
   let(:response_body) do
     {
       "searchLocations" => [

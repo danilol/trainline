@@ -1,6 +1,6 @@
-RSpec.describe Scraper::TheTrainline::HydrateSnapshot do
+RSpec.describe Scraper::Thetrainline::HydrateSnapshot do
   let(:session) { instance_double("Capybara::Session") }
-  let(:app_config) { instance_double("Scraper::TheTrainline::Config") }
+  let(:app_config) { instance_double("Scraper::Thetrainline::Config") }
   let(:hydrated_html) { "<html><body>hydrated</body></html>" }
 
   subject(:hydrator) { described_class.new(session, app_config) }

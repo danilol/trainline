@@ -1,11 +1,11 @@
-RSpec.describe Scraper::TheTrainline::SnapshotFetcher do
+RSpec.describe Scraper::Thetrainline::SnapshotFetcher do
   let(:temp_dir) { Dir.mktmpdir }
   let(:from) { "London" }
   let(:to) { "Paris" }
   
   let(:app_config) do
     instance_double(
-      "Scraper::TheTrainline::Config",
+      "Scraper::Thetrainline::Config",
       fixtures_path: temp_dir
     )
   end

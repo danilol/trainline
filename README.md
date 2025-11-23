@@ -44,9 +44,8 @@ Live Capybara parsing is slow because DOM is dynamic and constantly rehydrating.
 Fixture parsing is insanely fast because Nokogiri is stable and instantaneous.
 
 TODO:
-- Places lookup
 - Tests
-- Separate parser from scraper
+- check timeout
 
 
 fixture.rb test I’ve separated fixture extraction, and I’d either stub Capybara or cover it with a higher-level integration test. For now I’ve focused on unit-ish specs using the saved fixture.”

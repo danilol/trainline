@@ -1,8 +1,8 @@
 # frozen_string_literal: true
-require './lib/scraper/the_trainline/urn_locator.rb'
+require './lib/scraper/thetrainline/urn_locator.rb'
 
 module Scraper
-  class TheTrainline
+  module Thetrainline
     class UrlBuilder
       BASE_URL = "https://www.thetrainline.com"
 
@@ -25,7 +25,7 @@ module Scraper
       end
 
       def find_urn_locator(location)
-        Scraper::TheTrainline::UrnLocator.find_urn(location)
+        Scraper::Thetrainline::UrnLocator.find_urn(location)
       end
     end
   end

@@ -1,4 +1,4 @@
-RSpec.describe Scraper::TheTrainline::Utils do
+RSpec.describe Scraper::Thetrainline::Utils do
   describe '.slugify' do
     it 'lowercases the input' do
       expect(described_class.slugify('München')).to eq('munchen')

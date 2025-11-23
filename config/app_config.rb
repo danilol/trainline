@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Scraper
-  class TheTrainline
+  module Thetrainline
     class AppConfig
       VALID_MODES = %i[live snapshot].freeze
 
@@ -46,4 +46,4 @@ module Scraper
 end
 
 # Global instance
-APP_CONFIG = Scraper::TheTrainline::AppConfig.new
+APP_CONFIG = Scraper::Thetrainline::AppConfig.new

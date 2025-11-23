@@ -1,4 +1,4 @@
-RSpec.describe Scraper::TheTrainline::UrlBuilder do
+RSpec.describe Scraper::Thetrainline::UrlBuilder do
   let(:origin)       { "London" }
   let(:destination)  { "Paris" }
   let(:date)         { DateTime.new(2025, 1, 1, 12, 0, 0) }
@@ -7,8 +7,8 @@ RSpec.describe Scraper::TheTrainline::UrlBuilder do
   let(:destination_urn) { "456destination" }
 
   before do
-    allow(Scraper::TheTrainline::UrnLocator).to receive(:find_urn).with("London").and_return(origin_urn)
-    allow(Scraper::TheTrainline::UrnLocator).to receive(:find_urn).with("Paris").and_return(destination_urn)
+    allow(Scraper::Thetrainline::UrnLocator).to receive(:find_urn).with("London").and_return(origin_urn)
+    allow(Scraper::Thetrainline::UrnLocator).to receive(:find_urn).with("Paris").and_return(destination_urn)
   end
 
   describe "#build" do
@@ -24,7 +24,7 @@ RSpec.describe Scraper::TheTrainline::UrlBuilder do
     end
 
     it "encodes speial characters in URNs" do
-      allow(Scraper::TheTrainline::UrnLocator).to receive(:find_urn).with("London").and_return("LON A&B")
+      allow(Scraper::Thetrainline::UrnLocator).to receive(:find_urn).with("London").and_return("LON A&B")
 
       url = described_class.new("London", destination, date).build
 
@@ -34,8 +34,8 @@ RSpec.describe Scraper::TheTrainline::UrlBuilder do
     it "calls locator for both origin and destination" do
       described_class.new(origin, destination, date).build
 
-      expect(Scraper::TheTrainline::UrnLocator).to have_received(:find_urn).with("London")
-      expect(Scraper::TheTrainline::UrnLocator).to have_received(:find_urn).with("Paris")
+      expect(Scraper::Thetrainline::UrnLocator).to have_received(:find_urn).with("London")
+      expect(Scraper::Thetrainline::UrnLocator).to have_received(:find_urn).with("Paris")
     end
 
     it "returns a string" do

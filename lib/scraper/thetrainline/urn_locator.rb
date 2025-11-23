@@ -4,7 +4,7 @@ require "httparty"
 require "uri"
 
 module Scraper
-  class TheTrainline
+  module Thetrainline
     class UrnLocator
       # Trainline API endpoint for location search
       API_URL = "https://www.thetrainline.com/api/locations-search/v2/search"

@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Scraper
-  class TheTrainline
+  module Thetrainline
     class HydrateSnapshot
       attr_reader :content, :app_config
 

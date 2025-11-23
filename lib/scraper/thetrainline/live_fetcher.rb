@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 require "./config/capybara.rb"
-require "./lib/scraper/the_trainline/hydrate_snaphot.rb"
+require "./lib/scraper/thetrainline/hydrate_snaphot.rb"
 
 module Scraper
-  class TheTrainline
+  module Thetrainline
     class LiveFetcher
       attr_reader :url, :app_config
 
@@ -19,7 +19,7 @@ module Scraper
           session.visit(@url)
           accept_cookies(session)
           wait_page_to_load(session)
-          Scraper::TheTrainline::HydrateSnapshot.new(session, @app_config).run
+          Scraper::Thetrainline::HydrateSnapshot.new(session, @app_config).run
         ensure
           session.driver.quit
         end

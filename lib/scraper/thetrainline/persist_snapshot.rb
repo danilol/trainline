@@ -1,8 +1,8 @@
 # frozen_string_literal: true
-require "./lib/scraper/the_trainline/utils.rb"
+require "./lib/scraper/thetrainline/utils.rb"
 
 module Scraper
-  class TheTrainline
+  module Thetrainline
     class PersistSnapshot
       attr_reader :from, :to, :content, :app_config
 

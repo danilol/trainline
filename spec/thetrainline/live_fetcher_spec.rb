@@ -1,9 +1,9 @@
-RSpec.describe Scraper::TheTrainline::LiveFetcher do
+RSpec.describe Scraper::Thetrainline::LiveFetcher do
   let(:url) { "https://www.thetrainline.com/book/results?origin=123&destination=456" }
-  let(:app_config) { instance_double("Scraper::TheTrainline::Config") }
+  let(:app_config) { instance_double("Scraper::Thetrainline::Config") }
   let(:session) { instance_double(Capybara::Session) }
   let(:driver) { instance_double(Capybara::Cuprite::Driver) }
-  let(:hydrate_snapshot) { instance_double(Scraper::TheTrainline::HydrateSnapshot) }
+  let(:hydrate_snapshot) { instance_double(Scraper::Thetrainline::HydrateSnapshot) }
 
   subject(:fetcher) { described_class.new(url, app_config) }
 
@@ -18,7 +18,7 @@ RSpec.describe Scraper::TheTrainline::LiveFetcher do
       allow(session).to receive(:visit)
       allow(session).to receive(:has_css?).and_return(false)
       allow(session).to receive(:has_no_css?).and_return(true)
-      allow(Scraper::TheTrainline::HydrateSnapshot).to receive(:new)
+      allow(Scraper::Thetrainline::HydrateSnapshot).to receive(:new)
         .with(session, app_config).and_return(hydrate_snapshot)
       allow(hydrate_snapshot).to receive(:run).and_return("<html>snapshot</html>")
     end
