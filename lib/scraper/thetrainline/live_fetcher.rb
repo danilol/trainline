@@ -15,7 +15,7 @@ module Scraper
       end
 
       def fetch
-        session = Capybara::Session.new(:cuprite)
+        driver = Scraper::TheTrainline::PlaywrightDriver.new(app_config)
 
         begin
           session.visit(@url)
@@ -23,7 +23,7 @@ module Scraper
           wait_page_to_load(session)
           Scraper::Thetrainline::HydrateSnapshot.new(session, @app_config).run
         ensure
-          session.driver.quit
+          driver.close
         end
       end
 

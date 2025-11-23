@@ -18,3 +18,5 @@ group :development do
   # optional:
   gem "dotenv", "~> 2.8"
 end
+
+gem "playwright-ruby-client", "~> 1.56"

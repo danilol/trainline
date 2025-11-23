@@ -3,23 +3,24 @@
 module Scraper
   module Thetrainline
     class HydrateSnapshot
-      attr_reader :content, :app_config
+      attr_reader :driver, :app_config
 
-      def initialize(content, app_config)
-        @content = content
+      def initialize(driver, app_config)
+        @driver = driver          # PlaywrightDriver instance
+        @page   = driver.page     # Playwright::Page
         @app_config = app_config
       end
 
       def run
-        build_hydrated_snapshot(content, app_config)
+        build_hydrated_snapshot
       end
 
       private
 
-      # Extracts the hydrated DOM from the snapshot so that it can be parsed
-      def build_hydrated_snapshot(content, app_config)
-        content.evaluate_script(<<~JS)
-          (() => {
+      # Extracts hydrated HTML including shadow DOM
+      def build_hydrated_snapshot
+        @page.evaluate(<<~JS)
+          () => {
             const root = document.querySelector("tl-journey-list");
 
             if (!root || !root.shadowRoot) {
@@ -29,12 +30,14 @@ module Scraper
             const shadow = root.shadowRoot;
 
             const clone = document.documentElement.cloneNode(true);
-
             const placeholder = clone.querySelector("tl-journey-list");
-            placeholder.innerHTML = shadow.innerHTML;
+
+            if (placeholder) {
+              placeholder.innerHTML = shadow.innerHTML;
+            }
 
             return clone.outerHTML;
-          })();
+          }
         JS
       end
     end

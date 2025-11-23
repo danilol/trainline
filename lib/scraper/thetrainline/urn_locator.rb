@@ -13,7 +13,6 @@ module Scraper
         def find_urn(search_term, logger, locale: "en-us")
           data = request_locations(search_term, logger, locale)
           return nil unless data && data["searchLocations"].is_a?(Array)
-
           choose_best_match(search_term, data["searchLocations"])
         end
 
