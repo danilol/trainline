@@ -30,7 +30,7 @@ module Scraper
       private
 
       def default_mode
-        ENV.fetch("SNAPSHOT", "false") == "true" ? :snapshot : :live
+        ENV.fetch("USE_SAVED_FILE", "false") == "true" ? :snapshot : :live
       end
 
       # TODO: HEADLESS not fully functioning. Due to time constraints 

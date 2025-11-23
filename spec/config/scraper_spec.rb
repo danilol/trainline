@@ -1,27 +1,27 @@
 RSpec.describe Scraper::Thetrainline::AppConfig do
   describe "default mode" do
     around do |example|
-      original = ENV["SNAPSHOT"]
+      original = ENV["USE_SAVED_FILE"]
       example.run
-      ENV["SNAPSHOT"] = original
+      ENV["USE_SAVED_FILE"] = original
     end
 
-    it "defaults to :live when SNAPSHOT is not set" do
-      ENV["SNAPSHOT"] = nil
+    it "defaults to :live when USE_SAVED_FILE is not set" do
+      ENV["USE_SAVED_FILE"] = nil
       config = described_class.new
       expect(config.mode).to eq(:live)
       expect(config.live?).to be true
       expect(config.snapshot?).to be false
     end
 
-    it "defaults to :live when SNAPSHOT='false'" do
-      ENV["SNAPSHOT"] = "false"
+    it "defaults to :live when USE_SAVED_FILE='false'" do
+      ENV["USE_SAVED_FILE"] = "false"
       config = described_class.new
       expect(config.mode).to eq(:live)
     end
 
-    it "defaults to :snapshot when SNAPSHOT='true'" do
-      ENV["SNAPSHOT"] = "true"
+    it "defaults to :snapshot when USE_SAVED_FILE='true'" do
+      ENV["USE_SAVED_FILE"] = "true"
       config = described_class.new
       expect(config.mode).to eq(:snapshot)
     end

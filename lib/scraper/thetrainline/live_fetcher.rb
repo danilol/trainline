@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 require "./config/capybara.rb"
-require "./lib/scraper/thetrainline/hydrate_snaphot.rb"
+require "./lib/scraper/thetrainline/hydrate_snapshot.rb"
 
 module Scraper
   module Thetrainline

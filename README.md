@@ -1,59 +1,209 @@
-Your task is to build a bot in Ruby, that triggers searches on https://www.thetrainline.com and returns the results in a specific format.
+# Scraper::Thetrainline
 
-## Input
+A Ruby scraper for [Trainline](https://www.thetrainline.com) platform that supports both **snapshot mode** (offline, requires pre-saved file) and **live browser mode** using **Capybara + Cuprite**.
 
-* The bot should respond to `Scraper::Thetrainline.find(from, to, departure_at)`
-* Assume that the parameters `from` and `to` will be EXACTLY what you need
-* `departure_at` will be a Ruby DateTime object.
-* You do not need to solve any of the anti-bot logic they have, it's fine to use a local static version of the data you need
+This project was built for a take-home [challenge](input.MD).  
+Not every part is perfect; some **TODOs** are intentionally left to demonstrate awareness of improvements that could be made with more time.
 
-## Output
-
-* `find()` should return an array
-* Each element of the array should be an option for a trip
-* E.g. If you search for London to Paris, and they give you 10 "segments" leaving each hour on the hour, the array size should be 10
-( Each "segment" should be in this format, and should include all relevant data for the segement and any associated fares:
+The public API required by the challenge:
 
 ```ruby
-# Segment
-{
-      :departure_station => "Ashchurch For Tewkesbury",
-           :departure_at => #<DateTime: 2025-04-26T06:09:00+00:00 ((2456774j,22140s,0n),+0s,2299161j)>,
-        :arrival_station => "Ash",
-             :arrival_at => #<DateTime: 2025-04-26T09:37:00+00:00 ((2456774j,34620s,0n),+0s,2299161j)>,
-       :service_agencies => ["thetrainline"],
-    :duration_in_minutes => 208,
-            :changeovers => 2,
-               :products => ["train"],
-                  :fares => [...] # See below
-}
-
-# Fare
-{
-                       :name => "Advance Single",
-             :price_in_cents => 1939,
-                   :currency => "GBP",
-                             ...
-},
+Scraper::Thetrainline.find(from, to, departure_at)
 ```
 
-My takes:
+This returns an array of journey **Segment** objects.
 
-Nice challenge, put me to think.
-Live Capybara parsing is slow because DOM is dynamic and constantly rehydrating.
-Fixture parsing is insanely fast because Nokogiri is stable and instantaneous.
+---
 
-TODO:
-- Tests
-- check timeout
+## 🚀 Usage
 
+```ruby
+Scraper::Thetrainline.find(
+  "London",
+  "Paris",
+  DateTime.parse("2025-11-20 09:00")
+)
 
-fixture.rb test I’ve separated fixture extraction, and I’d either stub Capybara or cover it with a higher-level integration test. For now I’ve focused on unit-ish specs using the saved fixture.”
+or
 
-extra params
-- use_fixture?
-- save_fixture?
-- headless?
+Scraper::Thetrainline.find(
+  'Lisboa', 
+  'Faro', 
+  Date.today + 1
+)
+```
 
-Runs only in headless=false and requires solving the captcha. If headless=true script cannot solve captcha and will fail.
-noticed different search pages based on location (it will break, it was developed in germany)
+Returns:
+
+```ruby
+Array<Scraper::Thetrainline::Models::Segment>
+```
+
+Each `Segment` contains:
+
+- `departure_station`
+- `arrival_station`
+- `departure_at`
+- `arrival_at`
+- `service_agencies`
+- `duration_in_minutes`
+- `changeovers`
+- `products`
+- `fares` — an array of `Fare` objects
+
+Each `Fare` contains:
+
+- `name`
+- `price_in_cents`
+- `currency`
+
+---
+
+## 📦 Installation
+
+```bash
+bundle install
+```
+
+---
+
+## ⚙️ Environment Variables
+
+### USE_SAVED_FILE
+
+Controls whether the scraper loads static HTML snapshots or performs a real browser fetch.
+
+```
+USE_SAVED_FILE=false # launch browser and perform a real scrape (default)
+USE_SAVED_FILE=true  # use offline pre-saved snapshots (recommended)
+
+example:
+USE_SAVED_FILE=true Scraper::Thetrainline.find('Lisboa', 'Faro', Date.today + 1)
+```
+
+Snapshot mode requires HTML files stored in `snapshots/`.  
+This mode is **fast**, **reliable**, and offline.
+
+There are 6 pre-saved files in fixture/ directory:
+
+from 'London' to 'Paris'
+from 'Munich' to 'Hamburg'
+from 'Lisboa' to 'Faro'
+from 'Paris' to 'Marseille'
+from 'Roma' to 'Venezia'
+from 'Warsaw' to 'Prague'
+
+When trying to use a saved file that does not exist yet, you get the `Fixture not found` error.
+
+---
+
+### HEADLESS
+
+An attempted feature — **currently unreliable** due to Trainline’s bot detection.
+
+```
+HEADLESS=false  # visible browser window (recommended) (default)
+HEADLESS=true   # try headless mode (often blocked by Trainline)
+
+example:
+HEADLESS=true Scraper::Thetrainline.find('Lisboa', 'Faro', Date.today + 1)
+```
+
+A TODO exists in the code acknowledging this limitation.
+
+---
+
+## 🛂 CAPTCHA Handling
+
+When running in **live** mode (`USE_SAVED_FILE=false`), Trainline may show a CAPTCHA.
+
+If that happens:
+
+➡️ **Solve it manually in the browser window**  
+➡️ The scraper will continue automatically afterward
+
+This is common for protected public websites.
+
+---
+
+## 🧪 Running Tests
+
+Tests run **entirely using snapshot mode**, so no browser launches.
+
+Run all tests:
+
+```bash
+bundle exec rspec
+```
+
+You will find tests covering:
+
+- Models (`Segment`, `Fare`)
+- The `Client` behavior in snapshot mode
+- The `.find` entrypoint method
+
+Live-browser scraping is intentionally not tested.
+
+---
+
+## 🗂 Project Structure
+
+```
+lib/
+  scraper/
+    thetrainline/
+      client.rb
+      live_fetcher.rb
+      snapshot_fetcher.rb
+      parser.rb
+      url_builder.rb
+      models/
+        segment.rb
+        fare.rb
+    thetrainline.rb   # defines .find API
+config/
+  app_config.rb
+snapshots/
+spec/
+```
+
+---
+
+## 📌 Notable TODOs / Improvements
+
+These are intentionally left in the codebase to show awareness:
+
+### Logging
+A minimal logger exists.  
+A more robust, structured logger could be built (log levels, file logging, etc.).
+
+### HEADLESS Browser Mode
+Not fully functioning. Due to time constraints and Trainline’s bot protection, it mostly works only in non-headless mode.
+
+### More Robust Parsing
+The HTML parser is built around current snapshot structure.  
+Trainline HTML may change — a more resilient parser would use:
+
+- CSS selectors with fallback
+- Strict field validation
+- Error reporting for missing fields
+
+### More Tests
+Given more time, useful additions would include:
+- More detailed unit tests for parser edge cases
+- Contract tests for snapshot structure
+- Tests for error conditions
+- Check Capybara's timeout configurable and its needs
+
+---
+
+## 🧾 License
+
+MIT (or whatever license you prefer).
+
+---
+
+## 🙋 Contact
+
+If you have questions, feel free to reach out!
+

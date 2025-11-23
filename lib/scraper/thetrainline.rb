@@ -16,11 +16,9 @@ module Scraper
       attr_accessor :app_config, :logger
     end
 
-    # Default configuration (tests can replace this)
     self.app_config = AppConfig.new
     self.logger = Logger.new(enabled: app_config.logs_enabled)
 
-    # Public API
     def self.find(from, to, departure_at)
       Client.new(from, to, departure_at, app_config, logger).fetch_results
     end
