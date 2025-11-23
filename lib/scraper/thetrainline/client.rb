@@ -33,12 +33,14 @@ module Scraper
           Scraper::Thetrainline::SnapshotFetcher.new(@from, @to, @app_config)
         else
           url = Scraper::Thetrainline::UrlBuilder.new(@from, @to, @departure_at, @logger).build
-          Scraper::Thetrainline::LiveFetcher.new(url, @app_config)
+          content = Scraper::Thetrainline::LiveFetcher.new(url, @app_config)
+          create_snapshot_file(content) if @app_config.create_snapshot_file
+          content
         end
       end
 
-      def persist_snapshot(html)
-        Scraper::Thetrainline::PersistSnapshot.new(html, @app_config, @logger).write(html)
+      def create_snapshot_file(html)
+        Scraper::Thetrainline::PersistSnapshot.new(@from, @to, html, @app_config, @logger).write
       end
     end
   end

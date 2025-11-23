@@ -17,6 +17,7 @@ RSpec.describe Scraper::Thetrainline::LiveFetcher do
 
     allow(Scraper::Thetrainline::HydrateSnapshot).to receive(:new).with(session, app_config).and_return(hydrate_snapshot)
     allow(hydrate_snapshot).to receive(:run).and_return("<html>snapshot</html>")
+    stub_const("#{described_class}::TIMEOUT", 0)
   end
 
   describe "#fetch" do

@@ -37,7 +37,7 @@ module Scraper
 
       def wait_page_to_load(session)
         # manually solve captcha if needed...
-        # TODO: Remove this sleep when captcha is solved automatically
+        # TODO: Remove the sleep when automatically captcha solving is implemented
         sleep TIMEOUT
 
         session.has_css?('[role="tabpanel"]', wait: TIMEOUT)

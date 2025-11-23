@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require "date"
 require "./config/app_config"
 require "./lib/scraper/thetrainline/client"
 

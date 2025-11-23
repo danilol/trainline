@@ -6,12 +6,13 @@ module Scraper
 
       VALID_MODES = %i[live snapshot].freeze
 
-      attr_reader :mode, :headless, :logs_enabled
+      attr_reader :mode, :headless, :logs_enabled, :create_snapshot_file
 
-      def initialize(mode: default_mode, headless: false, logs_enabled: true)
+      def initialize(mode: default_mode, headless: false, logs_enabled: true, create_snapshot_file: default_create_snapshot_file)
         @mode = normalize_mode(mode)
         @headless = headless
         @logs_enabled = logs_enabled
+        @create_snapshot_file = create_snapshot_file
       end
 
       def snapshot?
@@ -44,6 +45,10 @@ module Scraper
           raise ArgumentError, "Invalid mode: #{value.inspect}"
         end
         sym
+      end
+
+      def default_create_snapshot_file
+        ENV.fetch("CREATE_SNAPSHOT_FILE", "false") == "true"
       end
     end
   end
